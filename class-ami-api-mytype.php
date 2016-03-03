@@ -10,16 +10,16 @@ class Ami_API extends Ami_API_Super {
 			array(array($this, 'get_jurisdictions'), WP_JSON_Server::READABLE),
 		);
 		$routes['/amicms/jurisdictions/(?P<id>\d+)'] = array(
-			array(array($this, 'get_post'), WP_JSON_Server::READABLE),	
+			array(array($this, 'get_post'), WP_JSON_Server::READABLE),
 		);
 		$routes['/amicms/jurisdictions/(?P<juris_id>\d+)/operators'] = array(
-			array(array($this, 'get_jurisdiction_operators'), WP_JSON_Server::READABLE),	
+			array(array($this, 'get_jurisdiction_operators'), WP_JSON_Server::READABLE),
 		);
 		$routes['/amicms/operators'] = array(
 			array(array($this, 'get_operators'), WP_JSON_Server::READABLE),
 		);
 		$routes['/amicms/operators/(?P<id>\d+)'] = array(
-			array(array($this, 'get_post'), WP_JSON_Server::READABLE),	
+			array(array($this, 'get_post'), WP_JSON_Server::READABLE),
 		);
 		$routes['/amicms/operators/(?P<operator_id>\d+)/services'] = array(
 			array(array($this, 'get_operator_services'), WP_JSON_Server::READABLE),
@@ -66,14 +66,13 @@ class Ami_API extends Ami_API_Super {
 		foreach($services->data as $serviceKey => $service){
 			if(isset($service['meta']['request_components'])){
 				foreach($service['meta']['request_components'] as $componentKey => $component){
-					$component_ids[] = $component;
+					$component_ids[] = $component->ID;
 				}
 			}
 		}
 		$component_ids = array_unique($component_ids);
-
 		$post_type = 'request-components';
-		
+
 		$args = array(
 			'orderby' => 'title',
 			'order'   => 'ASC',
@@ -114,28 +113,29 @@ class Ami_API extends Ami_API_Super {
 			if(isset($relation['meta']['identifiers'])){
 				if(is_array($relation['meta']['identifiers'])){
 					foreach($relation['meta']['identifiers'] as $identifierKey => $identifier){
-						$identifier_ids[] = $identifier;
+						$identifier_ids[] = $identifier->ID;
 					}
 				}
 				else{
-					$identifier_ids[] = $relation['meta']['identifiers'];
+					$identifier_ids[] = $relation['meta']['identifiers']->ID;
 				}
 			}
 		}
 		$identifier_ids = array_unique($identifier_ids);
 
 		$post_type = 'identifier';
-		
+
 		$args = array(
 			'orderby' => 'title',
 			'order'   => 'ASC',
 			'post__in' => $identifier_ids
 		);
 		$identifier_posts = $this->get_posts(array(), 'view', $post_type, 1, $args);
+
 		foreach ($identifier_posts->data as $key => $identifier_post) {
 			$new_options = array();
 			if(isset($identifier_post['meta']['field_options'])){
-				$options = explode("\r\n", $identifier_post['meta']['field_options']);
+				$options =  explode("\r\n", $identifier_post['meta']['field_options']);
 				foreach ($options as $subkey => $option) {
 					$arr = explode(' : ', $option);
 					$new_options[] = array("value" => $arr[0], "title" => $arr[1]);
@@ -146,15 +146,14 @@ class Ami_API extends Ami_API_Super {
 		$identifiers = array();
 		$identifiers['basic_personal_info'] = array();
 
-		
 		foreach($relations->data as $relationKey => $relation){
 			$identifier_weight = 0;
 			$identifiers[$relation['id']] = array();
 			if(isset($relation['meta']['identifiers'])){
 				if(is_array($relation['meta']['identifiers'])){
 					foreach($relation['meta']['identifiers'] as $identifierKey => $identifier){
-						if($this->is_key_value_present_in_array($identifier_posts->data, 'id', $identifier)){
-							$post = $this->get_array_by_key_value($identifier_posts->data, 'id', $identifier);
+						if($this->is_key_value_present_in_array($identifier_posts->data, 'id', $identifier->ID)){
+							$post = $this->get_array_by_key_value($identifier_posts->data, 'id', $identifier->ID);
 							if($post['meta']['basic_personal_info'] == "Yes"){
 								$post['weight'] = $identifier_weight;
 								$identifiers['basic_personal_info'][] = $post;
@@ -168,8 +167,8 @@ class Ami_API extends Ami_API_Super {
 					}
 				}
 				else{
-					if($this->is_key_value_present_in_array($identifier_posts->data, 'id', $relation['meta']['identifiers'])){
-							$post = $this->get_array_by_key_value($identifier_posts->data, 'id', $relation['meta']['identifiers']);
+					if($this->is_key_value_present_in_array($identifier_posts->data, 'id', $relation['meta']['identifiers']->ID)){
+							$post = $this->get_array_by_key_value($identifier_posts->data, 'id', $relation['meta']['identifiers']->ID);
 							if($post['meta']['basic_personal_info'] == "Yes"){
 								$post['weight'] = $identifier_weight;
 								$identifiers['basic_personal_info'][] = $post;
@@ -183,6 +182,7 @@ class Ami_API extends Ami_API_Super {
 				}
 			}
 		}
+
 		$tmp = array();
 		foreach ($identifiers['basic_personal_info'] as $k => $v) {
 			if(isset($tmp[$v['id']])){
@@ -229,6 +229,7 @@ class Ami_API extends Ami_API_Super {
 	}
 	public function get_jurisdiction_industries($jurisdiction_id){
 		$operators = $this->get_jurisdiction_operators($jurisdiction_id);
+
 		if(empty($operators->data)){
 			return [];
 		}
@@ -237,12 +238,12 @@ class Ami_API extends Ami_API_Super {
 
 		foreach ($operators->data as $operator_key => $operatorData) {
 			if(isset($operatorData['meta']['operator_industry'])){
-				$industry_ids[] = $operatorData['meta']['operator_industry'];
+				$industry_ids[] = $operatorData['meta']['operator_industry'][0]->ID;
 			}
 		}
 
 		$post_type = 'operator-industry';
-		
+
 		$args = array(
 			'orderby' => 'title',
 			'order'   => 'ASC',
@@ -254,7 +255,7 @@ class Ami_API extends Ami_API_Super {
 		//Get operator
 		$operator = $this->get_post($operator_id);
 		if(isset($operator->data["meta"]["services"])){
-			$service_ids = $operator->data["meta"]["services"];
+			$service_ids = $operator->data["meta"]["services"][0]->ID;
 			if(!is_array($service_ids)){
 				$service_ids = array($service_ids);
 			}
@@ -275,7 +276,7 @@ class Ami_API extends Ami_API_Super {
 		//Get operator
 		$operator = $this->get_post($operator_id);
 		if(isset($operator->data["meta"]["data_banks"])){
-			$bank_ids = $operator->data["meta"]["data_banks"];
+			$bank_ids = $operator->data["meta"]["data_banks"][0]->ID;
 			if(!is_array($bank_ids)){
 				$bank_ids = array($bank_ids);
 			}
@@ -297,7 +298,7 @@ class Ami_API extends Ami_API_Super {
 		//Get operator
 		$service = $this->get_post($service_id);
 		if(isset($service->data["meta"]["request_components"])){
-			$request_component_ids = $service->data["meta"]["request_components"];
+			$request_component_ids = $service->data["meta"]["request_components"][0]->ID;
 			if(!is_array($request_component_ids)){
 				$request_component_ids = array($request_component_ids);
 			}
