@@ -6,18 +6,18 @@ class Ami_API extends Ami_API_Super {
 
 	public function register_routes( $routes ) {
 		$routes = parent::register_routes( $routes );
+		$routes['/amicms/jurisdictions'] = array(
 			array(array($this, 'get_jurisdictions'), WP_JSON_Server::READABLE),
 		);
 		$routes['/amicms/jurisdictions/(?P<id>\d+)'] = array(
 			array(array($this, 'get_post'), WP_JSON_Server::READABLE),
 		);
+		$routes['/amicms/jurisdictions/(?P<juris_id>\d+)/links'] = array(
+			array(array($this, 'get_jurisdiction_links'), WP_JSON_Server::READABLE),
+		);
 		$routes['/amicms/jurisdictions/(?P<juris_id>\d+)/operators'] = array(
 			array(array($this, 'get_jurisdiction_operators'), WP_JSON_Server::READABLE),
 		);
-		$routes['/amicms/jurisdictions/?P<juris_id>\d+)/links'] = array(
-			array(array($this, 'get_jurisdiction_links'), WP_JSON_Server::READABLE),
-		);
-		$routes['/amicms/jurisdictions'] = array(
 		$routes['/amicms/operators'] = array(
 			array(array($this, 'get_operators'), WP_JSON_Server::READABLE),
 		);
@@ -230,21 +230,6 @@ class Ami_API extends Ami_API_Super {
 		);
 		return $this->get_posts(array(), 'view', $post_type, 1, $args);
 	}
-	public function get_jurisdiction_links($juris_id){
-		$post_type = 'links';
-		$args = array(
-			'orderby' => 'title',
-			'order'   => 'ASC',
-			'meta_query' => array(
-				array(
-					'key' => 'jurisdiction',
-					'value' => absint($juris_id),
-					'compare' => 'LIKE'
-				)
-			)
-		);
-		return $this->get_posts(array(), 'view', $post_type, 1, $args);
-	}
 	public function get_jurisdiction_industries($jurisdiction_id){
 		$operators = $this->get_jurisdiction_operators($jurisdiction_id);
 
@@ -351,7 +336,21 @@ class Ami_API extends Ami_API_Super {
 		);
 		return $this->get_posts(array(), 'view', $post_type, 1, $args);
 	}
-
+	public function get_jurisdiction_links($juris_id){
+		$post_type = 'links';
+		$args = array(
+			'orderby' => 'title',
+			'order'   => 'ASC',
+			'meta_query' => array(
+				array(
+					'key' => 'jurisdiction',
+					'value' => absint($juris_id),
+					'compare' => 'LIKE'
+				)
+			)
+		);
+		return $this->get_posts(array(), 'view', $post_type, 1, $args);
+	}
 	public function get_jurisdiction_industry_operators($jurisdiction_id, $industry_id){
 		$post_type = 'operator';
 		$args = array(
