@@ -15,6 +15,10 @@ function add_query_vars_filter( $vars ){
   $vars[] = "banks";
   return $vars;
 }
+
+// Remove JSON API CORS HEADERS; manage in-server
+remove_filter( 'json_serve_request', 'json_send_cors_headers'             );
+
 add_filter( 'query_vars', 'add_query_vars_filter' );
 add_action( 'wp_json_server_before_serve', 'ami_api_init' , 100);
 ?>
