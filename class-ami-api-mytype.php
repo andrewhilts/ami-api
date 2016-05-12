@@ -8,49 +8,49 @@ class Ami_API extends Ami_API_Super {
 		$routes = parent::register_routes( $routes );
 		$routes['/amicms/jurisdictions'] = array(
 			array(array($this, 'get_jurisdictions'), WP_JSON_Server::READABLE),
-		);
+			);
 		$routes['/amicms/jurisdictions/(?P<id>\d+)'] = array(
 			array(array($this, 'get_post'), WP_JSON_Server::READABLE),
-		);
+			);
 		$routes['/amicms/jurisdictions/(?P<juris_id>\d+)/links'] = array(
 			array(array($this, 'get_jurisdiction_links'), WP_JSON_Server::READABLE),
-		);
+			);
 		$routes['/amicms/jurisdictions/(?P<juris_id>\d+)/operators'] = array(
 			array(array($this, 'get_jurisdiction_operators'), WP_JSON_Server::READABLE),
-		);
+			);
 		$routes['/amicms/operators'] = array(
 			array(array($this, 'get_operators'), WP_JSON_Server::READABLE),
-		);
+			);
 		$routes['/amicms/operators/(?P<id>\d+)'] = array(
 			array(array($this, 'get_post'), WP_JSON_Server::READABLE),
-		);
+			);
 		$routes['/amicms/operators/(?P<operator_id>\d+)/services'] = array(
 			array(array($this, 'get_operator_services'), WP_JSON_Server::READABLE),
-		);
+			);
 		$routes['/amicms/operators/(?P<operator_id>\d+)/data_banks'] = array(
 			array(array($this, 'get_operator_data_banks'), WP_JSON_Server::READABLE),
-		);
+			);
 		$routes['/amicms/components'] = array(
 			array(array($this, 'get_request_components'), WP_JSON_Server::READABLE),
-		);
+			);
 		$routes['/amicms/data_banks/identifiers'] = array(
 			array(array($this, 'get_data_bank_identifiers'), WP_JSON_Server::READABLE),
-		);
+			);
 		$routes['/amicms/services/identifiers'] = array(
 			array(array($this, 'get_service_identifiers'), WP_JSON_Server::READABLE),
-		);
+			);
 		$routes['/amicms/services/(?P<service_id>\d+)/request_components'] = array(
 			array(array($this, 'get_service_request_components'), WP_JSON_Server::READABLE),
-		);
+			);
 		$routes['/amicms/jurisdictions/(?P<jurisdiction_id>\d+)/industries'] = array(
 			array(array($this, 'get_jurisdiction_industries'), WP_JSON_Server::READABLE),
-		);
+			);
 		$routes['/amicms/jurisdictions/(?P<jurisdiction_id>\d+)/industries/(?P<industry_id>\d+)/operators'] = array(
 			array(array($this, 'get_jurisdiction_industry_operators'), WP_JSON_Server::READABLE),
-		);
+			);
 		$routes['/amicms/jurisdictions/(?P<jurisdiction_id>\d+)/industries/(?P<industry_id>\d+)/request_template'] = array(
 			array(array($this, 'get_jurisdiction_industry_request_template'), WP_JSON_Server::READABLE),
-		);
+			);
 		return $routes;
 	}
 	public function get_request_components($filter = array(), $context = 'view', $page = 1 ){
@@ -62,7 +62,7 @@ class Ami_API extends Ami_API_Super {
 			'orderby' => 'title',
 			'order'   => 'ASC',
 			'post__in' => $service_ids
-		);
+			);
 		$services = $this->get_posts(array(), 'view', 'operator-service', 1, $args);
 
 		$component_ids = array();
@@ -80,7 +80,7 @@ class Ami_API extends Ami_API_Super {
 			'orderby' => 'title',
 			'order'   => 'ASC',
 			'post__in' => $component_ids
-		);
+			);
 		return $this->get_posts(array(), 'view', $post_type, 1, $args);
 	}
 	public function get_service_identifiers($filter = array(), $context = 'view', $page = 1 ){
@@ -92,12 +92,12 @@ class Ami_API extends Ami_API_Super {
 	public function get_identifiers($type, $filter = array(), $context = 'view', $page = 1){
 		switch($type){
 			case "data-banks":
-				$query_param = "banks";
-				$post_type = 'data-bank';
+			$query_param = "banks";
+			$post_type = 'data-bank';
 			break;
 			case "services":
-				$query_param = "services";
-				$post_type = 'operator-service';
+			$query_param = "services";
+			$post_type = 'operator-service';
 			break;
 		}
 		$relation_ids = get_query_var($query_param, [] );
@@ -108,9 +108,9 @@ class Ami_API extends Ami_API_Super {
 			'orderby' => 'title',
 			'order'   => 'ASC',
 			'post__in' => $relation_ids
-		);
+			);
 		$relations = $this->get_posts(array(), 'view', $post_type, 1, $args);
-		// return $relations;
+		//return $relations;
 		$identifier_ids = array();
 		foreach($relations->data as $relationKey => $relation){
 			if(isset($relation['meta']['identifiers'])){
@@ -132,7 +132,7 @@ class Ami_API extends Ami_API_Super {
 			'orderby' => 'title',
 			'order'   => 'ASC',
 			'post__in' => $identifier_ids
-		);
+			);
 		$identifier_posts = $this->get_posts(array(), 'view', $post_type, 1, $args);
 
 		foreach ($identifier_posts->data as $key => $identifier_post) {
@@ -171,17 +171,17 @@ class Ami_API extends Ami_API_Super {
 				}
 				else{
 					if($this->is_key_value_present_in_array($identifier_posts->data, 'id', $relation['meta']['identifiers']->ID)){
-							$post = $this->get_array_by_key_value($identifier_posts->data, 'id', $relation['meta']['identifiers']->ID);
-							if($post['meta']['basic_personal_info'] == "Yes"){
-								$post['weight'] = $identifier_weight;
-								$identifiers['basic_personal_info'][] = $post;
-							}
-							else{
-								$post['weight'] = $identifier_weight;
-								$identifiers[$relation['id']][] = $post;
-							}
-							$identifier_weight++;
+						$post = $this->get_array_by_key_value($identifier_posts->data, 'id', $relation['meta']['identifiers']->ID);
+						if($post['meta']['basic_personal_info'] == "Yes"){
+							$post['weight'] = $identifier_weight;
+							$identifiers['basic_personal_info'][] = $post;
 						}
+						else{
+							$post['weight'] = $identifier_weight;
+							$identifiers[$relation['id']][] = $post;
+						}
+						$identifier_weight++;
+					}
 				}
 			}
 		}
@@ -205,14 +205,14 @@ class Ami_API extends Ami_API_Super {
 		$args = array(
 			'orderby' => 'title',
 			'order'   => 'ASC',
-		);
+			);
 		return $this->get_posts($filter, $context, 'jurisdiction', $page, $args);
 	}
 	public function get_operators($filter = array(), $context = 'view', $page = 1 ){
 		$args = array(
 			'orderby' => 'title',
 			'order'   => 'ASC',
-		);
+			);
 		return $this->get_posts($filter, $context, 'operator', $page, $args);
 	}
 	public function get_jurisdiction_operators($juris_id){
@@ -225,9 +225,9 @@ class Ami_API extends Ami_API_Super {
 					'key' => 'jurisdiction',
 					'value' => absint($juris_id),
 					'compare' => 'LIKE'
+					)
 				)
-			)
-		);
+			);
 		return $this->get_posts(array(), 'view', $post_type, 1, $args);
 	}
 	public function get_jurisdiction_industries($jurisdiction_id){
@@ -251,14 +251,15 @@ class Ami_API extends Ami_API_Super {
 			'orderby' => 'title',
 			'order'   => 'ASC',
 			'post__in' => $industry_ids
-		);
+			);
 		return $this->get_posts(array(), 'view', $post_type, 1, $args);
 	}
 	public function get_operator_services($operator_id){
 		//Get operator
 		$operator = $this->get_post($operator_id);
 		if(isset($operator->data["meta"]["services"])){
-			$service_ids = $operator->data["meta"]["services"][0]->ID;
+			$service_ids = $this->getIDs($operator->data["meta"]["services"]);
+			//$service_ids = $operator->data["meta"]["services"][0]->ID;
 			if(!is_array($service_ids)){
 				$service_ids = array($service_ids);
 			}
@@ -272,29 +273,38 @@ class Ami_API extends Ami_API_Super {
 			'orderby' => 'title',
 			'order'   => 'ASC',
 			'post__in' => $service_ids
-		);
+			);
 		return $this->get_posts(array(), 'view', $post_type, 1, $args);
 	}
 	public function get_operator_data_banks($operator_id){
 		//Get operator
 		$operator = $this->get_post($operator_id);
-		if(isset($operator->data["meta"]["data_banks"])){
-			$bank_ids = $operator->data["meta"]["data_banks"][0]->ID;
-			if(!is_array($bank_ids)){
-				$bank_ids = array($bank_ids);
+		if(isset($operator->data["meta"]["components"]) || isset($operator->data["meta"]["data_banks"])){
+			if(isset($operator->data["meta"]["data_banks"])){
+				$bank_ids = $this->getIDs($operator->data["meta"]["data_banks"]);
+				if(!is_array($bank_ids)){
+					$bank_ids = array($bank_ids);
+				}
 			}
+			if(isset($operator->data["meta"]["components"])){
+				$component_ids = $this->getIDs($operator->data["meta"]["components"]);
+				if(!is_array($component_ids)){
+					$component_ids = array($component_ids);
+				}
+			}
+			$post_ids = array();
+			$post_ids = array_merge($bank_ids, $component_ids);
+			if(empty($post_ids)){return [];}
 		}
 		else{
 			return [];
 		}
-
-		$post_type = 'data-bank';
 		$args = array(
 			'orderby' => 'title',
 			'order'   => 'ASC',
-			'post__in' => $bank_ids
-		);
-		return $this->get_posts(array(), 'view', $post_type, 1, $args);
+			'post__in' => $post_ids
+			);
+		return $this->get_posts(array(), 'view', array('data-bank', 'request-components'), 1, $args);
 	}
 
 	public function get_service_request_components($service_id){
@@ -314,7 +324,7 @@ class Ami_API extends Ami_API_Super {
 			'orderby' => 'title',
 			'order'   => 'ASC',
 			'post__in' => $request_component_ids
-		);
+			);
 		return $this->get_posts(array(), 'view', $post_type, 1, $args);
 	}
 
@@ -326,14 +336,14 @@ class Ami_API extends Ami_API_Super {
 					'key' => 'jurisdiction',
 					'value' => absint($jurisdiction_id),
 					'compare' => 'LIKE'
-				),
+					),
 				array(
 					'key' => 'operator_industry',
 					'value' => absint($industry_id),
 					'compare' => 'LIKE'
+					)
 				)
-			)
-		);
+			);
 		return $this->get_posts(array(), 'view', $post_type, 1, $args);
 	}
 	public function get_jurisdiction_links($juris_id){
@@ -346,9 +356,9 @@ class Ami_API extends Ami_API_Super {
 					'key' => 'jurisdiction',
 					'value' => absint($juris_id),
 					'compare' => 'LIKE'
+					)
 				)
-			)
-		);
+			);
 		return $this->get_posts(array(), 'view', $post_type, 1, $args);
 	}
 	public function get_jurisdiction_industry_operators($jurisdiction_id, $industry_id){
@@ -359,32 +369,39 @@ class Ami_API extends Ami_API_Super {
 					'key' => 'jurisdiction',
 					'value' => absint($jurisdiction_id),
 					'compare' => 'LIKE'
-				),
+					),
 				array(
 					'key' => 'operator_industry',
 					'value' => absint($industry_id),
 					'compare' => 'LIKE'
+					)
 				)
-			)
-		);
+			);
 		return $this->get_posts(array(), 'view', $post_type, 1, $args);
 	}
 	// ...
 	public function is_key_value_present_in_array($array, $member, $value) {
-	   foreach($array as $k => $v) {
-	      if($v[$member] == $value){
-	        return true;
-	      }
-	   }
-	   return false;
-}
+		foreach($array as $k => $v) {
+			if($v[$member] == $value){
+				return true;
+			}
+		}
+		return false;
+	}
 	public function get_array_by_key_value($array, $member, $value) {
-	   foreach($array as $k => $v) {
-	      if($v[$member] == $value){
-	        return $v;
-	      }
-	   }
-	   return false;
+		foreach($array as $k => $v) {
+			if($v[$member] == $value){
+				return $v;
+			}
+		}
+		return false;
+	}
+	public function getIDs($a){
+		return array_map('getID', $a);
+	}
+
 }
+function getID($obj){
+	return $obj->ID;
 }
 ?>
