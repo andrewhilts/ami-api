@@ -226,7 +226,8 @@ class Ami_API extends Ami_API_Super {
 					'value' => absint($juris_id),
 					'compare' => 'LIKE'
 				)
-			)
+			),
+			'posts_per_page' => 100
 		);
 		return $this->get_posts(array(), 'view', $post_type, 1, $args);
 	}
@@ -375,7 +376,8 @@ class Ami_API extends Ami_API_Super {
 					'value' => absint($industry_id),
 					'compare' => 'LIKE'
 				)
-			)
+			),
+			'posts_per_page' => 100
 		);
 		return $this->get_posts(array(), 'view', $post_type, 1, $args);
 	}
