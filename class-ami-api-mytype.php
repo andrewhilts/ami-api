@@ -81,7 +81,23 @@ class Ami_API extends Ami_API_Super {
 			'order'   => 'ASC',
 			'post__in' => $component_ids
 		);
-		return $this->get_posts(array(), 'view', $post_type, 1, $args);
+
+        $component_posts = $this->get_posts(array(), 'view', $post_type, 1, $args);
+
+        //Assign weight based on order
+        $ordered_ids = array();
+        $weight = 0;
+        foreach ($component_ids as $key => $component_id) {
+                $ordered_ids[$component_id] = array('weight' => $weight);
+                $weight++;
+        }
+        //return $ordered_ids[135]['weight'];
+        foreach($component_posts->data as $key => $component_post){
+                //Get weight for post
+                $component_posts->data[$key]['weight'] = $ordered_ids[$component_post['id']]['weight'];
+        }
+
+        return $component_posts;
 	}
 	public function get_service_identifiers($filter = array(), $context = 'view', $page = 1 ){
 		return $this->get_identifiers('services', $filter, $context, $page);
