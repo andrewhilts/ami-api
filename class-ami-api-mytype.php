@@ -61,6 +61,7 @@ class Ami_API extends Ami_API_Super {
 		$args = array(
 			'orderby' => 'title',
 			'order'   => 'ASC',
+			'posts_per_page' => 100,
 			'post__in' => $service_ids
 		);
 		$services = $this->get_posts(array(), 'view', 'operator-service', 1, $args);
@@ -79,6 +80,7 @@ class Ami_API extends Ami_API_Super {
 		$args = array(
 			'orderby' => 'title',
 			'order'   => 'ASC',
+			'posts_per_page' => 100,
 			'post__in' => $component_ids
 		);
 
@@ -123,6 +125,7 @@ class Ami_API extends Ami_API_Super {
 		$args = array(
 			'orderby' => 'title',
 			'order'   => 'ASC',
+			'posts_per_page' => 100,
 			'post__in' => $relation_ids
 		);
 		$relations = $this->get_posts(array(), 'view', $post_type, 1, $args);
@@ -147,6 +150,7 @@ class Ami_API extends Ami_API_Super {
 		$args = array(
 			'orderby' => 'title',
 			'order'   => 'ASC',
+			'posts_per_page' => 100,
 			'post__in' => $identifier_ids
 		);
 		$identifier_posts = $this->get_posts(array(), 'view', $post_type, 1, $args);
@@ -221,6 +225,7 @@ class Ami_API extends Ami_API_Super {
 		$args = array(
 			'orderby' => 'title',
 			'order'   => 'ASC',
+			'posts_per_page' => 100
 		);
 		return $this->get_posts($filter, $context, 'jurisdiction', $page, $args);
 	}
@@ -228,6 +233,7 @@ class Ami_API extends Ami_API_Super {
 		$args = array(
 			'orderby' => 'title',
 			'order'   => 'ASC',
+			'posts_per_page' => 100
 		);
 		return $this->get_posts($filter, $context, 'operator', $page, $args);
 	}
@@ -267,6 +273,7 @@ class Ami_API extends Ami_API_Super {
 		$args = array(
 			'orderby' => 'title',
 			'order'   => 'ASC',
+			'posts_per_page' => 100,
 			'post__in' => $industry_ids
 		);
 		return $this->get_posts(array(), 'view', $post_type, 1, $args);
@@ -289,6 +296,7 @@ class Ami_API extends Ami_API_Super {
 		$args = array(
 			'orderby' => 'title',
 			'order'   => 'ASC',
+			'posts_per_page' => 100,
 			'post__in' => $service_ids
 		);
 		return $this->get_posts(array(), 'view', $post_type, 1, $args);
@@ -319,6 +327,7 @@ class Ami_API extends Ami_API_Super {
 		$args = array(
 			'orderby' => 'title',
 			'order'   => 'ASC',
+			'posts_per_page' => 100,
 			'post__in' => $post_ids
 		);
 		return $this->get_posts(array(), 'view', array('data-bank', 'request-components'), 1, $args);
@@ -340,6 +349,7 @@ class Ami_API extends Ami_API_Super {
 		$args = array(
 			'orderby' => 'title',
 			'order'   => 'ASC',
+			'posts_per_page' => 100,
 			'post__in' => $request_component_ids
 		);
 		return $this->get_posts(array(), 'view', $post_type, 1, $args);
@@ -348,6 +358,7 @@ class Ami_API extends Ami_API_Super {
 	public function get_jurisdiction_industry_request_template($jurisdiction_id, $industry_id){
 		$post_type = 'request-template';
 		$args = array(
+			'posts_per_page' => 100,
 			'meta_query' => array(
 				array(
 					'key' => 'jurisdiction',
@@ -368,6 +379,7 @@ class Ami_API extends Ami_API_Super {
 		$args = array(
 			'orderby' => 'title',
 			'order'   => 'ASC',
+			'posts_per_page' => 100,
 			'meta_query' => array(
 				array(
 					'key' => 'jurisdiction',
