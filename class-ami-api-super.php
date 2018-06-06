@@ -267,7 +267,6 @@ class Ami_API_Super extends WP_JSON_Posts {
 		unset($res['parent']);
 		unset($res['link']);
 		unset($res['format']);
-		unset($res['slug']);
 		unset($res['guid']);
 		unset($res['excerpt']);
 		unset($res['menu_order']);
